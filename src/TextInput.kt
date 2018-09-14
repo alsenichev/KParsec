@@ -5,7 +5,7 @@ import kotlin.coroutines.experimental.*
 /**
  * The position of the char in a text.
  */
-internal data class Position(val line: Int = 0, val column: Int = 0){
+data class Position(val line: Int = 0, val column: Int = 0){
     fun incrementColumn() = copy(column = column + 1)
     fun incrementLine() = Position(line = line + 1, column = 0)
 }
