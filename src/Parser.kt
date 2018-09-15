@@ -135,7 +135,7 @@ fun <T1, T2, R> lift2 (parser1: Parser<T1>, parser2: Parser<T2>, func: (T1, T2) 
  * Success if both parsers are success.
  */
 infix fun <T1, T2> Parser<T1>.andThen (second: Parser<T2>): Parser<Pair<T1, T2>>{
-    val label = "$label andThen $second.label"
+    val label = "$label andThen $second"
     return bindP{i: T1 -> second.bindP{y: T2 -> returnP(Pair(i, y))}}.setLabel(label)
 }
 
@@ -152,7 +152,7 @@ infix fun <T> Parser<T>.orElse (second: Parser<T>): Parser<T>{
             }
         }
     }
-    return Parser("$label orElse $second.label", innerFn)
+    return Parser("$label orElse $second", innerFn)
 }
 
 /**
@@ -201,7 +201,7 @@ fun <T> many (parser: Parser<T>): Parser<List<T>>{
     val parse = {input:InputState -> parseZeroOrMore(parser, input)}
     val success = {pair:Pair<List<T>, InputState> -> Success(pair.first, pair.second)}
     val innerFn = {input:InputState -> success(parse(input))}
-    return Parser("many $parser.label", innerFn)
+    return Parser("many $parser", innerFn)
 }
 
 /**
