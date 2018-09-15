@@ -11,7 +11,7 @@ sealed class Result<out T>
 /**
  * Parsing succeed.
  */
-internal data class Success<T>(val value: T, val remaining: InputState) : Result<T>()
+internal data class Success<T>(val value: T, val inputState: InputState) : Result<T>()
 
 /**
  * Parsing failed.

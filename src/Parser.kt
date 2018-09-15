@@ -106,7 +106,7 @@ fun <T, R> Parser<T>.bindP(func: (T)->Parser<R>): Parser<R>{
             }
             is Success -> {
                 val parser2 = func(result1.value)
-                return parser2.runOnInput(result1.remaining)
+                return parser2.runOnInput(result1.inputState)
             }
         }
     }
@@ -168,9 +168,9 @@ fun <T> parseZeroOrMore(parser: Parser<T>, input: InputState) : Pair<List<T>, In
         is Success ->{
             // if parse succeeds, call recursively
             // to get subsequent values
-            val (subsequentValues, remaining) = parseZeroOrMore(parser, firstResult.remaining)
+            val (subsequentValues, inputState) = parseZeroOrMore(parser, firstResult.inputState)
             val values = listOf(firstResult.value) + subsequentValues
-            Pair(values, remaining)
+            Pair(values, inputState)
         }
     }
 }
