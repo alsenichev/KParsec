@@ -1,13 +1,8 @@
 package com.senichev.kParsec.parser
 
-import com.senichev.kParsec.Result.Failure
-import com.senichev.kParsec.Result.Result
-import com.senichev.kParsec.Result.Success
-import com.senichev.kParsec.option.None
-import com.senichev.kParsec.option.Option
-import com.senichev.kParsec.option.Some
-import com.senichev.kParsec.textInput.InputState
-import com.senichev.kParsec.textInput.ParserPosition
+import com.senichev.kParsec.result.*
+import com.senichev.kParsec.option.*
+import com.senichev.kParsec.textInput.*
 
 /**
  * Represents a function that parses an InputState.

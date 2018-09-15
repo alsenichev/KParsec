@@ -1,4 +1,4 @@
-package com.senichev.kParsec.Result
+package com.senichev.kParsec.result
 
 import com.senichev.kParsec.textInput.InputState
 import com.senichev.kParsec.textInput.ParserPosition

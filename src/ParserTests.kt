@@ -1,12 +1,12 @@
-import com.senichev.kParsec.Result.report
-import org.junit.*
-
-import com.senichev.kParsec.parser.*
-import com.senichev.kParsec.standardParsers.*
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class ParserTests(){
+import com.senichev.kParsec.result.*
+import com.senichev.kParsec.parser.*
+import com.senichev.kParsec.standardParsers.*
+import com.senichev.kParsec.textInput.*
+
+class ParserTests {
 
     @Test fun testCharParserSuccess(){
         val parseA = pchar('A')
@@ -282,6 +282,66 @@ class ParserTests(){
         assertEquals("Success(value=[1, 2, 3], inputState=InputState(lines=[1,2,3;], position=Position(line=0, column=5)))", result2.toString())
         val result3 = resultP.run("Z;")
         assertEquals("Success(value=[], inputState=InputState(lines=[Z;], position=Position(line=0, column=0)))", result3.toString())
+    }
+
+    @Test fun testAssignNewLabel(){
+        val parseDigit = anyOf(listOf('0'..'9').flatMap{it}).setLabel("digit")
+        val result = parseDigit.run("|ABC")
+        assertEquals("Line:0 Col:0 Error parsing digit\n|ABC\n^Unexpected '|'", result.report())
+    }
+
+    @Test fun testNextChar(){
+        val result = InputState.fromString("")
+        assertEquals("[]", result.readAllChars().toString())
+        val result1 = InputState.fromString("a")
+        assertEquals("[a, \n]", result1.readAllChars().toString())
+        val result2 = InputState.fromString("ab")
+        assertEquals("[a, b, \n]", result2.readAllChars().toString())
+        val result3 = InputState.fromString("a\nb")
+        assertEquals("[a, \n, b, \n]", result3.readAllChars().toString())
+    }
+
+    @Test fun testReport(){
+        val example = Failure<Char>("identifier", "unexpected |", ParserPosition("123 ab|cd",line=1, column=6))
+        assertEquals("Line:1 Col:6 Error parsing identifier\n123 ab|cd\n      ^unexpected |", example.report())
+    }
+
+    @Test fun testParserAB(){
+        val parseAB = pchar('A') andThen pchar('B') setLabel "AB"
+        val result = parseAB.run("A|C")
+        assertEquals("Line:0 Col:1 Error parsing AB\nA|C\n ^Unexpected '|'", result.report())
+    }
+
+    @Test fun testPStringWithReport(){
+        val result = pstring("AB").run("ABC")
+        assertEquals("AB", result.report())
+        val result1 = pstring("AB").run("A|C")
+        assertEquals("Line:0 Col:1 Error parsing AB\nA|C\n ^Unexpected '|'", result1.report())
+    }
+
+    @Test fun testWhitespace(){
+        val result = spaces().run(" ABC")
+        assertEquals("[ ]", result.report())
+        val result1 = spaces().run("A")
+        assertEquals("[]", result1.report())
+        val result2 = spaces1().run(" ABC")
+        assertEquals("[ ]", result2.report())
+        val result3 = spaces1().run("A")
+        assertEquals("Line:0 Col:0 Error parsing whitespace\nA\n^Unexpected 'A'", result3.report())
+    }
+
+    @Test fun testPIntWithReport(){
+        val result = pint().run("-123Z")
+        assertEquals("-123", result.report())
+        val result2 = pint().run("-Z123")
+        assertEquals("Line:0 Col:1 Error parsing integer\n-Z123\n ^Unexpected 'Z'", result2.report())
+    }
+
+    @Test fun testPFloat(){
+        val result = pfloat().run("-123.45Z")
+        assertEquals("-123.45", result.report())
+        val result2 = pfloat().run("-123z5")
+        assertEquals("Line:0 Col:4 Error parsing float\n-123z5\n    ^Unexpected 'z'", result2.report())
     }
 
 }
